@@ -1,10 +1,13 @@
 import Gameboard from "../gameboard/gameboard";
 import Ship from "../ship/ship";
+import { matchCoord } from "../utilities";
 
 export default class Player {
   constructor() {
     this.gameboard = new Gameboard();
     this.ships = this.fleet;
+    this.onTargetShots = [];
+    this.missedShots = [];
   }
 
   get fleet() {
@@ -30,7 +33,7 @@ export default class Player {
   }
 
   placeShipsRand() {
-    const queue = [...this.ships]; // Clone the array
+    const queue = [...this.ships];
 
     for (const current of queue) {
       let placed = false;
@@ -41,7 +44,26 @@ export default class Player {
         placed = this.gameboard.place(current, coord, axis);
       }
     }
+  }
 
-    return true;
+  isCoordEmpty(coord) {
+    return matchCoord(coord, this.gameboard.empty);
+  }
+
+  attack(enemy, coord) {
+    if (!enemy.isCoordEmpty(coord)) {
+      for (const ship of enemy.ships) {
+        if (ship.isFound(coord)) {
+          ship.hit(); // if coord is not empty, determine which ship is there and damage it
+          this.onTargetShots.push(coord);
+        }
+      }
+    } else {
+      this.missedShots.push(coord);
+    }
+  }
+
+  alreadyTargeted(coord) {
+    return matchCoord(coord, this.onTargetShots);
   }
 }

@@ -1,3 +1,5 @@
+import { matchCoord } from "../utilities";
+
 export default class Ship {
   constructor(length) {
     this.length = length;
@@ -7,10 +9,14 @@ export default class Ship {
   }
 
   hit() {
-    return this.damage++;
+    this.damage++;
   }
 
   get isSunk() {
     return this.damage === this.length;
+  }
+
+  isFound(coordinates) {
+    return matchCoord(coordinates, this.space);
   }
 }
