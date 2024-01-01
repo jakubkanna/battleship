@@ -21,17 +21,19 @@ export default class Gameboard {
     const [space, margin] = this.calculateShipArea(ship, coordinates, axis);
 
     //  if 'space' is not occupied
-    if (this.findOut(space)) {
+    if (this.findSpace(space)) {
       this.launchShip(ship, space, margin);
 
       // Filter out elements from 'empty' that match elements in shipArea
       this.reduceEmptySpace([...space, ...margin]);
+
+      return true;
     } else {
-      return; //to be changed later
+      return false;
     }
   }
 
-  findOut(space) {
+  findSpace(space) {
     return space.every((coord) =>
       this.empty.some(
         (emptyCoord) => emptyCoord[0] === coord[0] && emptyCoord[1] === coord[1]
