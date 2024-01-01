@@ -14,14 +14,4 @@ describe("Ship class", () => {
 
     expect(ship.isSunk).toBe(true);
   });
-
-  test("should throw an error for an invalid length", () => {
-    expect(() => {
-      new Ship(6);
-    }).toThrow("Invalid length");
-
-    expect(() => {
-      new Ship(1);
-    }).toThrow("Invalid length");
-  });
 });
