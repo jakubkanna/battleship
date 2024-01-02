@@ -1,5 +1,7 @@
 import Player from "./player";
 import Ship from "../ship/ship";
+import { randomAxis, randomCoord } from "../../utilities";
+
 describe("Player class", () => {
   let player = new Player();
   beforeEach(() => {
@@ -8,7 +10,7 @@ describe("Player class", () => {
 
   describe("Player class init", () => {
     test("generates random coord", () => {
-      const [x, y] = player.randomCoord;
+      const [x, y] = randomCoord();
 
       // Check if x and y are within the expected range
       expect(x).toBeGreaterThanOrEqual(0);
@@ -18,14 +20,14 @@ describe("Player class", () => {
     });
 
     test("generates 'x' or 'y' randomly", () => {
-      const axis = player.randomAxis;
+      const axis = randomAxis();
 
       expect(axis == "x" || axis == "y").toBe(true);
     });
 
     test("places ships", () => {
       player.placeShipsRand();
-      expect(player.gameboard.sea.length).toBe(5);
+      expect(player.gameboard.occupied.length).toBe(5);
     });
   });
 
@@ -46,13 +48,13 @@ describe("Player class", () => {
         const enemy = new Player();
 
         // Place enemy ship at [2, 2] on the 'x' axis
-        enemy.gameboard.place(enemy.ships[0], [2, 2], "x");
+        enemy.gameboard.place(Player.fleet[0], [2, 2], "x");
 
         // Attack the ship
         player.attack(enemy, [2, 2]);
 
         // Check if the damage to the ship has increased
-        const damagedShip = enemy.gameboard.sea[0];
+        const damagedShip = enemy.gameboard.occupied[0];
         // console.log(damagedShip);
         expect(damagedShip.damage).toBe(1);
       });

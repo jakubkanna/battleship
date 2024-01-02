@@ -1,4 +1,4 @@
-import { matchCoord } from "../utilities";
+import { matchCoord } from "../../utilities";
 
 export default class Ship {
   constructor(length) {

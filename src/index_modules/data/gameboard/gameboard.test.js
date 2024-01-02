@@ -22,7 +22,7 @@ describe("Gameboard class", () => {
 
     test("place single ship", () => {
       gameboard.place(carrier, coordinates, "x");
-      expect(gameboard.sea.length).toBe(1);
+      expect(gameboard.occupied.length).toBe(1);
       expect(gameboard.empty.length).toBe(79);
     });
 

@@ -1,16 +1,9 @@
 import Gameboard from "../gameboard/gameboard";
 import Ship from "../ship/ship";
-import { matchCoord } from "../utilities";
+import { matchCoord, randomAxis, randomCoord } from "../../utilities";
 
 export default class Player {
-  constructor() {
-    this.gameboard = new Gameboard();
-    this.ships = this.fleet;
-    this.onTargetShots = [];
-    this.missedShots = [];
-  }
-
-  get fleet() {
+  static get fleet() {
     const carrier = new Ship(5);
     const battleship = new Ship(4);
     const cruiser = new Ship(3);
@@ -20,27 +13,21 @@ export default class Player {
     return [carrier, battleship, cruiser, submarine, destroyer];
   }
 
-  get randomCoord() {
-    const x = Math.floor(Math.random() * 10);
-    const y = Math.floor(Math.random() * 10);
-    return [x, y];
-  }
-
-  get randomAxis() {
-    const axis = ["x", "y"];
-    const randomIndex = Math.floor(Math.random() * axis.length);
-    return axis[randomIndex];
+  constructor() {
+    this.gameboard = new Gameboard();
+    this.onTargetShots = [];
+    this.missedShots = [];
   }
 
   placeShipsRand() {
-    const queue = [...this.ships];
+    const queue = [...Player.fleet];
 
     for (const current of queue) {
       let placed = false;
 
       while (!placed) {
-        const coord = this.randomCoord;
-        const axis = this.randomAxis;
+        const coord = randomCoord();
+        const axis = randomAxis();
         placed = this.gameboard.place(current, coord, axis);
       }
     }
@@ -52,7 +39,7 @@ export default class Player {
 
   attack(enemy, coord) {
     if (!enemy.isCoordEmpty(coord)) {
-      for (const ship of enemy.ships) {
+      for (const ship of enemy.gameboard.occupied) {
         if (ship.isFound(coord)) {
           ship.hit(); // if coord is not empty, determine which ship is there and damage it
           this.onTargetShots.push(coord);
