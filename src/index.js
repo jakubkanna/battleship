@@ -1,82 +1,86 @@
-import Player from "./index_modules/data/player/player";
+import Game from "./index_modules/data/game/game";
 import Display from "./index_modules/display/display";
-import { matchCoord } from "./index_modules/utilities";
-
-class Game {
-  createPlayers(numPlayers = 2) {
-    this.players = Array.from({ length: numPlayers }, () => new Player());
-    return this.players;
-  }
-}
+import { randomCoord } from "./index_modules/utilities";
 
 class GameController {
   constructor() {
     this.game = new Game();
-    this.players = null;
-    this.display = null;
+    this.display = new Display(this.game);
+    this.game.players.forEach((player) => player.placeShipsRand());
+  }
 
-    this.handleClick = this.handleClick.bind(this);
+  get currentRound() {
+    return this.game.round;
+  }
+
+  get currentPlayer() {
+    return this.game.players[this.game.turn];
   }
 
   init() {
-    this.players = this.game.createPlayers();
-
-    this.display = new Display(this.game);
-    this.display.addListeners(this.handleClick);
-
-    this.players.forEach((player) => player.placeShipsRand());
+    this.isRoundInProgress = false;
+    this.display.addListeners(this.playRound, 1);
+    this.display.displayRound(this.currentRound, this.currentPlayer);
   }
 
-  handleClick(e) {
-    const cellElId = e.srcElement.id;
-    const boardElId = e.srcElement.parentElement.id;
+  playRound = (e) => {
+    if (!isCellElement(e) || this.isRoundInProgress) return;
 
-    const coord = parseCoord(cellElId);
-    const index = parseBoardIndex(boardElId);
+    this.isRoundInProgress = true;
 
-    const player = this.players[index];
+    const coord = this.display.getCoordFromCell(e.srcElement);
+    const gameboardEl = e.srcElement.parentElement;
+    const enemyIndex = this.display.getEnemyIndexFromCell(gameboardEl);
 
-    if (isCellElement(e)) this.handleCellClick(coord, player);
+    // Current player attack
+    this.playerAction(enemyIndex, coord);
+
+    // Computer attack after a delay
+    setTimeout(() => {
+      this.computerAction();
+      this.isRoundInProgress = false;
+    }, 2000);
+  };
+
+  playerAction(enemyIndex, coord) {
+    const enemy = this.game.players[enemyIndex];
+    const player = this.currentPlayer;
+
+    if (!player.attack(enemy, coord)) {
+      console.error(`Can't attack the same coordinates twice.`);
+      return false;
+    }
+
+    this.display.displayAttack(player, enemy);
+
+    this.game.nextRound();
+    this.display.displayRound(this.currentRound, this.currentPlayer);
+
+    return true;
   }
 
-  handleCellClick(coord, player) {
-    let isEmpty = false;
+  computerAction() {
+    if (this.game.turn === 1) {
+      const enemy = this.game.players[0];
+      const player = this.game.players[1];
 
-    if (!matchCoord(coord, player.gameboard.empty)) {
-      let isMargin = false;
-      let isSpace = false;
+      let successfulAttack = false;
 
-      for (const ship of player.gameboard.occupied) {
-        if (matchCoord(coord, ship.margin)) {
-          console.log("margin"); //remove later
-          isMargin = true;
-        } else if (matchCoord(coord, ship.space)) {
-          console.log("space"); //remove later
-          isSpace = true;
-        }
+      while (!successfulAttack) {
+        successfulAttack = player.attack(enemy, randomCoord());
+
+        if (successfulAttack) this.display.displayAttack(player, enemy);
       }
 
-      if (!isMargin && !isSpace) {
-        throw new Error("Unexpected coordinate state");
-      }
-    } else {
-      console.log("empty"); //remove later
-      isEmpty = true;
+      this.game.nextRound();
+      this.display.displayRound(this.currentRound, this.currentPlayer);
     }
   }
-}
-
-function parseCoord(cellElId) {
-  return cellElId.split("-").map(Number);
-}
-
-function parseBoardIndex(boardElId) {
-  return parseInt(boardElId.split("-")[1]);
 }
 
 function isCellElement(e) {
   return e.target.classList.contains("cell");
 }
 
-const gameController = new GameController();
+window.gameController = new GameController();
 gameController.init();

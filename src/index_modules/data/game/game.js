@@ -3,6 +3,8 @@ import Player from "../player/player";
 export default class Game {
   constructor(pNum) {
     this._players = this.createPlayers(pNum);
+    this.setPlayerNames();
+
     this.round = 1;
     this._turn = 0;
     this.defeated = [];
@@ -20,26 +22,32 @@ export default class Game {
     return Array.from({ length: playerNumber }, () => new Player());
   }
 
-  playRound() {
-    const current = this.players[this.turn];
+  setPlayerNames() {
+    this.players.forEach((player, i) => {
+      player.name = "Player" + (i + 1);
+    });
+  }
 
-    if (this.isWinner(current)) {
-      return current.name;
-    } else {
-      this.round++;
-      this.turn++;
-    }
+  nextRound() {
+    this.round++;
+    this.turn++;
   }
 
   set turn(value) {
     this._turn = value % this.players.length;
   }
 
-  isWinner(current) {
-    // For each player (other than the current player):
-    // If all ships of the current player are sunk:
-    //   Return true
-    // Otherwise:
-    //   Return false
+  isWinner() {
+    const current = this.players[this.turn];
+    for (const player of this.players) {
+      if (player !== current && areAllShipsSunk(player)) {
+        return current.name;
+      }
+    }
+    return false;
   }
+}
+
+function areAllShipsSunk(player) {
+  return player.gameboard.occupied.every((ship) => ship.isSunk);
 }

@@ -15,7 +15,7 @@ describe("Game", () => {
 
   test("tracks rounds", () => {
     // Test that the game instance tracks rounds after playing a round
-    game.playRound();
+    game.nextRound();
     expect(game.round).toBe(2);
   });
 
@@ -24,27 +24,29 @@ describe("Game", () => {
     expect(game.turn).toBe(0);
 
     // Play a round and check if the turn is updated
-    game.playRound();
+    game.nextRound();
     expect(game.turn).toBe(1);
 
     // Play another round to wrap around to the first player
-    game.playRound();
+    game.nextRound();
     expect(game.turn).toBe(0);
   });
 
   test("check for the winner before next round", () => {
-    //init players
+    // init players
     game.players[0].name = "Player";
     game.players[1].name = "Computer";
 
     game.players[0].placeShipsRand();
     const player0Ships = game.players[0].gameboard.occupied;
 
-    //sink all the ships for Player
+    // sink all the ships for Player
     for (const ship of player0Ships) ship.damage = ship.length;
 
-    game.turn = 1;
-    //Computer is winner
-    expect(game.playRound()).toBe("Computer");
+    // Trigger the next round
+    game.nextRound();
+
+    // Computer is the winner
+    expect(game.isWinner()).toBe("Computer");
   });
 });

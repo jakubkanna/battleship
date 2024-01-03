@@ -19,4 +19,8 @@ export default class Ship {
   isFound(coordinates) {
     return matchCoord(coordinates, this.space);
   }
+
+  isMargin(coordinates) {
+    return matchCoord(coordinates, this.margin);
+  }
 }

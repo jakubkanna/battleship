@@ -155,12 +155,19 @@ footer {
   justify-content: center;
   padding: 6px;
 }
+
+:root {
+  --indigo-color: rgb(48, 0, 130);
+  --grey-color: rgb(107, 107, 107);
+}
+
 h1 {
   font-size: 48px;
 }
+
 main {
   display: flex;
-  gap: 6px;
+  gap: 12px;
   padding: 6px;
 }
 main > * {
@@ -180,13 +187,21 @@ main > * {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  gap: 1px;
   border: 1px dashed black;
   padding: 12px;
   box-sizing: border-box;
 }
+
 .cell {
   width: 100%;
   padding-top: 100%;
-  border: 1px solid black;
+  border: 0.5px solid black;
+}
+
+.ship {
+  background-color: var(--indigo-color);
+}
+
+.empty {
+  background-color: var(--grey-color);
 }

@@ -3,9 +3,11 @@ import Ship from "../ship/ship";
 import { randomAxis, randomCoord } from "../../utilities";
 
 describe("Player class", () => {
-  let player = new Player();
+  let player;
+  let enemy;
   beforeEach(() => {
     player = new Player();
+    enemy = new Player();
   });
 
   describe("Player class init", () => {
@@ -57,6 +59,17 @@ describe("Player class", () => {
         const damagedShip = enemy.gameboard.occupied[0];
         // console.log(damagedShip);
         expect(damagedShip.damage).toBe(1);
+      });
+
+      test("tracks missed shots", () => {
+        player.attack(enemy, [9, 0]);
+        expect(player.missedShots.length).toBe(1);
+      });
+
+      test("tracks target shots", () => {
+        enemy.gameboard.place(Player.fleet[0], [2, 2], "x");
+        player.attack(enemy, [2, 2]);
+        expect(player.onTargetShots.length).toBe(1);
       });
     });
   });

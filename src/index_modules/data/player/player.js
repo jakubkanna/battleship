@@ -14,6 +14,7 @@ export default class Player {
   }
 
   constructor() {
+    this.name;
     this.gameboard = new Gameboard();
     this.onTargetShots = [];
     this.missedShots = [];
@@ -33,24 +34,36 @@ export default class Player {
     }
   }
 
-  isCoordEmpty(coord) {
-    return matchCoord(coord, this.gameboard.empty);
-  }
-
   attack(enemy, coord) {
+    if (this.alreadyAttacked(coord)) return false; // Unsuccessful attack
+
+    // Check if the coordinate is not empty
     if (!enemy.isCoordEmpty(coord)) {
       for (const ship of enemy.gameboard.occupied) {
         if (ship.isFound(coord)) {
-          ship.hit(); // if coord is not empty, determine which ship is there and damage it
+          ship.hit();
           this.onTargetShots.push(coord);
+
+          if (ship.isSunk) {
+            this.onTargetShots.push(...ship.margin, ...ship.space);
+            //some of the missedShots element might be === to ship.margin element, but it doesn't matter ?
+          }
+        } else if (ship.isMargin(coord)) {
+          this.missedShots.push(coord);
         }
       }
     } else {
       this.missedShots.push(coord);
     }
+
+    return true; // Successful attack
   }
 
-  alreadyTargeted(coord) {
-    return matchCoord(coord, this.onTargetShots + this.missedShots);
+  isCoordEmpty(coord) {
+    return matchCoord(coord, this.gameboard.empty);
+  }
+
+  alreadyAttacked(coord) {
+    return matchCoord(coord, [...this.missedShots, ...this.onTargetShots]);
   }
 }
