@@ -7,6 +7,7 @@ class GameController {
     this.game = new Game();
     this.display = new Display(this.game);
     this.game.players.forEach((player) => player.placeShipsRand());
+    this.isRoundInProgress = false;
   }
 
   get currentRound() {
@@ -18,9 +19,9 @@ class GameController {
   }
 
   init() {
-    this.isRoundInProgress = false;
     this.display.addListeners(this.playRound, 1);
     this.display.displayRound(this.currentRound, this.currentPlayer);
+    this.display.displayShips(this.currentPlayer);
   }
 
   playRound = (e) => {
@@ -30,7 +31,7 @@ class GameController {
 
     const coord = this.display.getCoordFromCell(e.srcElement);
     const gameboardEl = e.srcElement.parentElement;
-    const enemyIndex = this.display.getEnemyIndexFromCell(gameboardEl);
+    const enemyIndex = this.display.getEnemyIndexFromCell(gameboardEl) - 1;
 
     // Current player attack
     this.playerAction(enemyIndex, coord);
@@ -39,7 +40,7 @@ class GameController {
     setTimeout(() => {
       this.computerAction();
       this.isRoundInProgress = false;
-    }, 2000);
+    }, 1000);
   };
 
   playerAction(enemyIndex, coord) {
@@ -51,25 +52,23 @@ class GameController {
       return false;
     }
 
-    this.display.displayAttack(player, enemy);
+    this.display.displayAttack(player, enemy, coord);
 
     this.game.nextRound();
     this.display.displayRound(this.currentRound, this.currentPlayer);
-
-    return true;
   }
 
   computerAction() {
     if (this.game.turn === 1) {
       const enemy = this.game.players[0];
       const player = this.game.players[1];
-
       let successfulAttack = false;
 
       while (!successfulAttack) {
-        successfulAttack = player.attack(enemy, randomCoord());
+        const coord = randomCoord();
+        successfulAttack = player.attack(enemy, coord);
 
-        if (successfulAttack) this.display.displayAttack(player, enemy);
+        if (successfulAttack) this.display.displayAttack(player, enemy, coord);
       }
 
       this.game.nextRound();

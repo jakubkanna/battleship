@@ -157,8 +157,10 @@ footer {
 }
 
 :root {
+  --dark-indigo-color: rgb(29, 0, 80);
+
   --indigo-color: rgb(48, 0, 130);
-  --grey-color: rgb(107, 107, 107);
+  --grey-color: rgb(149, 204, 255);
 }
 
 h1 {
@@ -166,21 +168,27 @@ h1 {
 }
 
 main {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto 1fr;
   gap: 12px;
   padding: 6px;
-}
-main > * {
-  width: 50%;
 }
 
 @media (max-width: 600px) {
   main {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
-  main > * {
-    width: 100%;
-  }
+}
+
+#messageBox {
+  max-height: 450px;
+  grid-column: span 2;
+  border: 1px dashed black;
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+  padding: 12px;
 }
 
 [id^="gameboard"] {
@@ -202,6 +210,16 @@ main > * {
   background-color: var(--indigo-color);
 }
 
-.empty {
+.hit {
+  background-color: var(--dark-indigo-color) !important;
+}
+
+.miss {
   background-color: var(--grey-color);
+}
+#roundBox {
+  text-transform: capitalize;
+}
+#messageBox > *:not(#roundBox) {
+  padding-left: 6px;
 }

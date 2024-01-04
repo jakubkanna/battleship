@@ -46,7 +46,6 @@ export default class Player {
 
           if (ship.isSunk) {
             this.onTargetShots.push(...ship.margin, ...ship.space);
-            //some of the missedShots element might be === to ship.margin element, but it doesn't matter ?
           }
         } else if (ship.isMargin(coord)) {
           this.missedShots.push(coord);

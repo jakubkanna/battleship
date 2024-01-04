@@ -2,14 +2,14 @@ export default class Display {
   constructor(game) {
     this.game = game;
     this.containers = this.renderBoards();
+    this.messageBox = generateMessageBox();
   }
 
   renderBoards() {
-    console.log(this.game);
     const containers = [];
 
-    this.game.players.forEach((player, i) => {
-      const container = generateGameBoard(i);
+    this.game.players.forEach((player) => {
+      const container = generateGameBoard(player.name);
       const cells = generateCells(player.gameboard);
 
       appendGameBoard(container, cells);
@@ -34,9 +34,9 @@ export default class Display {
 
   getEnemyIndexFromCell(el) {
     const id = el.id;
-    const match = id.match(/gameboard-(\d+)/);
+    const match = id.match(/gameboard-Player(\d+)/);
 
-    if (match && match[1]) {
+    if (match && match[1] !== undefined) {
       return parseInt(match[1], 10);
     } else {
       // Handle the case where the ID doesn't match the expected format
@@ -50,49 +50,70 @@ export default class Display {
   }
 
   displayRound(nb, player) {
-    console.log(`Round: ${nb}, ${player.name} turn.`);
+    const string = `Round ${nb}: ${player.name} turn.`;
+    this.appendRoundMessage(string, "roundMessage");
   }
 
-  displayAttack(player, enemy) {
-    console.log(`${player.name} attacks ${enemy.name}.`);
+  displayAttack(player, enemy, coord) {
+    const hitMessage = `${player.name}: hit ${enemy.name} ship at [${coord}].`;
+    const missMessage = `${player.name}: miss.`;
+
+    for (const shot of player.onTargetShots) {
+      const targetEl = findEl(enemy, shot);
+      targetEl.classList.add("hit");
+    }
+
+    for (const missed of player.missedShots) {
+      const targetEl = findEl(enemy, missed);
+      targetEl.classList.add("miss");
+    }
+
+    // Append the message outside of the loops
+    if (player.onTargetShots.length > 0) {
+      this.appendMessage(hitMessage, "hitMessage");
+    } else if (player.missedShots.length > 0) {
+      this.appendMessage(missMessage, "missMessage");
+    }
+
+    this.messageBox.scrollTop = this.messageBox.scrollHeight;
   }
-  // removeListeners(cb) {
-  //   this.containers.forEach((container) => {
-  //     container.removeEventListener("click", cb);
-  //   });
-  // }
 
-  // discoverShip(gameboardID, elementID) {
-  //   const el = document.querySelector(`#${gameboardID} [id="${elementID}"]`);
-  //   el.classList.add("ship");
-  // }
+  displayShips(player) {
+    const ships = player.gameboard.occupied;
 
-  // discoverEmpty(gameboardID, elementID) {
-  //   const el = document.querySelector(`#${gameboardID} [id="${elementID}"]`);
-  //   el.classList.add("empty");
-  // }
+    for (const ship of ships) {
+      for (const space of ship.space) {
+        // Find element #${x}-${y} inside #gameboard-${player.name}
+        const targetEl = findEl(player, space);
 
-  //   setActiveBorder(gameboardID) {
-  //     const gameboardElement = document.getElementById(gameboardID);
-  //     const otherGameboardsElements = document.querySelectorAll(
-  //       `[id^=gameboard]:not([id=${gameboardID}])`
-  //     );
+        if (targetEl) {
+          // Set element class to "ship"
+          targetEl.classList.add("ship");
+        } else {
+          console.error(`Element with selector ${elementSelector} not found.`);
+        }
+      }
+    }
+  }
 
-  //     if (gameboardElement) {
-  //       // Set the border style for the active gameboard
-  //       gameboardElement.style.border = "2px solid"; // Adjust the style as needed
-  //     } else {
-  //       console.error(`Element with ID ${gameboardID} not found.`);
-  //       return;
-  //     }
+  appendMessage(string, elClass = "message") {
+    const para = document.createElement("p");
+    para.classList.add(elClass);
 
-  //     // Set dashed border for other gameboards
-  //     otherGameboardsElements.forEach((element) => {
-  //       if (element !== gameboardElement) {
-  //         element.style.border = "1px dashed"; // Adjust the style as needed
-  //       }
-  //     });
-  //   }
+    para.textContent = string;
+    this.messageBox.append(para);
+  }
+
+  appendRoundMessage(string, elClass = "round") {
+    const container = document.getElementById("roundBox");
+    container.innerHTML = "";
+
+    const para = document.createElement("p");
+    para.classList.add(elClass);
+
+    para.textContent = string;
+    container.append(para);
+  }
 }
 
 function appendGameBoard(container, cells) {
@@ -104,6 +125,27 @@ function appendGameBoard(container, cells) {
 function generateGameBoard(i) {
   const container = document.createElement("div");
   container.id = `gameboard-${i}`;
+
+  const main = document.querySelector("main");
+  main.appendChild(container);
+
+  return container;
+}
+
+function generateMessageBox() {
+  const container = document.createElement("div");
+  container.id = `messageBox`;
+
+  // Create roundBox element
+  const roundBox = document.createElement("div");
+  roundBox.id = "roundBox";
+
+  // Append roundBox to container
+  container.appendChild(roundBox);
+
+  // Create and append hr element
+  const hrElement = document.createElement("hr");
+  container.appendChild(hrElement);
 
   const main = document.querySelector("main");
   main.appendChild(container);
@@ -123,4 +165,11 @@ function generateCell(element) {
   div.classList.add("cell");
   div.id = `${element[0]}-${element[1]}`;
   return div;
+}
+
+function findEl(player, coord) {
+  const [x, y] = coord;
+  // Find element #${x}-${y} inside #gameboard-${player.name}
+  const elementSelector = `#gameboard-${player.name} [id="${x}-${y}"]`;
+  return document.querySelector(elementSelector);
 }
