@@ -182,7 +182,7 @@ main {
 }
 
 #messageBox {
-  max-height: 450px;
+  max-height: 300px;
   grid-column: span 2;
   border: 1px dashed grey;
   overflow: auto;
@@ -219,7 +219,16 @@ main {
 }
 #roundBox {
   text-transform: capitalize;
+  position: sticky;
+  background-color: white;
+  top: 0;
+}
+#messageBox {
+  position: relative;
 }
 #messageBox > *:not(#roundBox) {
   padding-left: 6px;
+}
+.winMessage {
+  font-weight: 800;
 }

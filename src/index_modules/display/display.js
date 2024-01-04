@@ -96,6 +96,11 @@ export default class Display {
     }
   }
 
+  displayWinner(player) {
+    const winMessage = `-- ${player.name} wins the game --`;
+    this.appendMessage(winMessage, "winMessage");
+  }
+
   appendMessage(string, elClass = "message") {
     const para = document.createElement("p");
     para.classList.add(elClass);

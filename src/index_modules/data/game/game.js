@@ -37,12 +37,9 @@ export default class Game {
     this._turn = value % this.players.length;
   }
 
-  isWinner() {
-    const current = this.players[this.turn];
+  isWinner(current) {
     for (const player of this.players) {
-      if (player !== current && areAllShipsSunk(player)) {
-        return current.name;
-      }
+      if (player !== current && areAllShipsSunk(player)) return true;
     }
     return false;
   }

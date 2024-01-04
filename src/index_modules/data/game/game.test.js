@@ -47,6 +47,6 @@ describe("Game", () => {
     game.nextRound();
 
     // Computer is the winner
-    expect(game.isWinner()).toBe("Computer");
+    expect(game.isWinner()).toBe(true);
   });
 });

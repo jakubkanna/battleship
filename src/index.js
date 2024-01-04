@@ -8,6 +8,7 @@ class GameController {
     this.display = new Display(this.game);
     this.game.players.forEach((player) => player.placeShipsRand());
     this.isRoundInProgress = false;
+    this.winnerIsFound = false;
   }
 
   get currentRound() {
@@ -25,7 +26,8 @@ class GameController {
   }
 
   playRound = (e) => {
-    if (!isCellElement(e) || this.isRoundInProgress) return;
+    if (!isCellElement(e) || this.isRoundInProgress || this.winnerIsFound)
+      return;
 
     this.isRoundInProgress = true;
 
@@ -44,6 +46,8 @@ class GameController {
   };
 
   playerAction(enemyIndex, coord) {
+    if (this.checkForWinner()) return;
+
     const enemy = this.game.players[enemyIndex];
     const player = this.currentPlayer;
 
@@ -60,6 +64,7 @@ class GameController {
 
   computerAction() {
     if (this.game.turn === 1) {
+      if (this.checkForWinner()) return;
       const enemy = this.game.players[0];
       const player = this.game.players[1];
       let successfulAttack = false;
@@ -74,6 +79,14 @@ class GameController {
       this.game.nextRound();
       this.display.displayRound(this.currentRound, this.currentPlayer);
     }
+  }
+  checkForWinner() {
+    if (this.game.isWinner(this.currentPlayer)) {
+      this.display.displayWinner(this.currentPlayer);
+      this.winnerIsFound = true;
+      return true;
+    }
+    return false;
   }
 }
 
