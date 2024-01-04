@@ -3,15 +3,13 @@ import Ship from "../ship/ship";
 import { matchCoord, randomAxis, randomCoord } from "../../utilities";
 
 export default class Player {
-  static get fleet() {
-    const carrier = new Ship(5);
-    const battleship = new Ship(4);
-    const cruiser = new Ship(3);
-    const submarine = new Ship(3);
-    const destroyer = new Ship(2);
-
-    return [carrier, battleship, cruiser, submarine, destroyer];
-  }
+  static fleet = [
+    new Ship(5),
+    new Ship(4),
+    new Ship(3),
+    new Ship(3),
+    new Ship(2)
+  ];
 
   constructor() {
     this.name;
@@ -37,7 +35,14 @@ export default class Player {
   attack(enemy, coord) {
     if (this.alreadyAttacked(coord)) return false; // Unsuccessful attack
 
-    // Check if the coordinate is not empty
+    if (!this.handleAttackResult(enemy, coord)) {
+      this.missedShots.push(coord);
+    }
+
+    return true; // Successful attack
+  }
+
+  handleAttackResult(enemy, coord) {
     if (!enemy.isCoordEmpty(coord)) {
       for (const ship of enemy.gameboard.occupied) {
         if (ship.isFound(coord)) {
@@ -47,15 +52,15 @@ export default class Player {
           if (ship.isSunk) {
             this.onTargetShots.push(...ship.margin, ...ship.space);
           }
+
+          return true; // Successfully attacked a ship
         } else if (ship.isMargin(coord)) {
-          this.missedShots.push(coord);
+          return false; // Attacked the margin of a ship
         }
       }
-    } else {
-      this.missedShots.push(coord);
     }
 
-    return true; // Successful attack
+    return false; // Attacked an empty coordinate
   }
 
   isCoordEmpty(coord) {
