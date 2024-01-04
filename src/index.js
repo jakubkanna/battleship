@@ -26,13 +26,14 @@ class GameController {
   }
 
   playRound = (e) => {
-    if (!isCellElement(e) || this.isRoundInProgress || this.winnerIsFound)
+    if (!this.isCellElement(e) || this.isRoundInProgress || this.winnerIsFound) {
       return;
+    }
 
     this.isRoundInProgress = true;
 
-    const coord = this.display.getCoordFromCell(e.srcElement);
-    const gameboardEl = e.srcElement.parentElement;
+    const coord = this.display.getCoordFromCell(e.target);
+    const gameboardEl = e.target.parentElement;
     const enemyIndex = this.display.getEnemyIndexFromCell(gameboardEl) - 1;
 
     // Current player attack
@@ -46,14 +47,15 @@ class GameController {
   };
 
   playerAction(enemyIndex, coord) {
-    if (this.checkForWinner()) return;
+    if (this.checkForWinner()) {
+      return;
+    }
 
     const enemy = this.game.players[enemyIndex];
     const player = this.currentPlayer;
 
     if (!player.attack(enemy, coord)) {
       console.error(`Can't attack the same coordinates twice.`);
-      return false;
     }
 
     this.display.displayAttack(player, enemy, coord);
@@ -64,7 +66,9 @@ class GameController {
 
   computerAction() {
     if (this.game.turn === 1) {
-      if (this.checkForWinner()) return;
+      if (this.checkForWinner()) {
+        return;
+      }
       const enemy = this.game.players[0];
       const player = this.game.players[1];
       let successfulAttack = false;
@@ -73,13 +77,16 @@ class GameController {
         const coord = randomCoord();
         successfulAttack = player.attack(enemy, coord);
 
-        if (successfulAttack) this.display.displayAttack(player, enemy, coord);
+        if (successfulAttack) {
+          this.display.displayAttack(player, enemy, coord);
+        }
       }
 
       this.game.nextRound();
       this.display.displayRound(this.currentRound, this.currentPlayer);
     }
   }
+
   checkForWinner() {
     if (this.game.isWinner(this.currentPlayer)) {
       this.display.displayWinner(this.currentPlayer);
@@ -88,10 +95,10 @@ class GameController {
     }
     return false;
   }
-}
 
-function isCellElement(e) {
-  return e.target.classList.contains("cell");
+  isCellElement(e) {
+    return e.target && e.target.classList.contains("cell");
+  }
 }
 
 window.gameController = new GameController();
