@@ -184,7 +184,7 @@ main {
 #messageBox {
   max-height: 450px;
   grid-column: span 2;
-  border: 1px dashed black;
+  border: 1px dashed grey;
   overflow: auto;
   display: grid;
   gap: 12px;
@@ -195,7 +195,7 @@ main {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  border: 1px dashed black;
+  border: 1px dashed grey;
   padding: 12px;
   box-sizing: border-box;
 }

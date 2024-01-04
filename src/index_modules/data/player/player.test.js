@@ -30,6 +30,16 @@ describe("Player class", () => {
     test("places ships", () => {
       player.placeShipsRand();
       expect(player.gameboard.occupied.length).toBe(5);
+
+      for (let ship of player.gameboard.occupied) {
+        expect(ship.space.length).toBe(ship.length);
+
+        const expectedMinLength = 1;
+        const expectedMaxLength = ship.length * 2 + 6;
+
+        expect(ship.margin.length).toBeGreaterThanOrEqual(expectedMinLength);
+        expect(ship.margin.length).toBeLessThanOrEqual(expectedMaxLength);
+      }
     });
   });
 
