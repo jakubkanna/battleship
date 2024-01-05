@@ -60,7 +60,7 @@ describe("Player class", () => {
         const enemy = new Player();
 
         // Place enemy ship at [2, 2] on the 'x' axis
-        enemy.gameboard.place(Player.fleet[0], [2, 2], "x");
+        enemy.gameboard.place(enemy.fleet[0], [2, 2], "x");
 
         // Attack the ship
         player.attack(enemy, [2, 2]);
@@ -77,7 +77,7 @@ describe("Player class", () => {
       });
 
       test("tracks target shots", () => {
-        enemy.gameboard.place(Player.fleet[0], [2, 2], "x");
+        enemy.gameboard.place(enemy.fleet[0], [2, 2], "x");
         player.attack(enemy, [2, 2]);
         expect(player.onTargetShots.length).toBe(1);
       });

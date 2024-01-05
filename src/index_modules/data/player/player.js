@@ -3,13 +3,9 @@ import Ship from "../ship/ship";
 import { matchCoord, randomAxis, randomCoord } from "../../utilities";
 
 export default class Player {
-  static fleet = [
-    new Ship(5),
-    new Ship(4),
-    new Ship(3),
-    new Ship(3),
-    new Ship(2)
-  ];
+  get fleet() {
+    return [new Ship(5), new Ship(4), new Ship(3), new Ship(3), new Ship(2)];
+  }
 
   constructor() {
     this.name;
@@ -19,7 +15,7 @@ export default class Player {
   }
 
   placeShipsRand() {
-    const queue = [...Player.fleet];
+    const queue = [...this.fleet];
 
     for (const current of queue) {
       let placed = false;

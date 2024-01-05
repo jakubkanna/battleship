@@ -155,7 +155,10 @@ footer {
   justify-content: center;
   padding: 6px;
 }
-
+body {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
 :root {
   --dark-indigo-color: rgb(29, 0, 80);
 
@@ -169,8 +172,7 @@ h1 {
 
 main {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
   padding: 6px;
 }
@@ -179,10 +181,13 @@ main {
   main {
     grid-template-columns: 1fr;
   }
+  #messageBox {
+    grid-column: span 1 !important;
+  }
 }
 
 #messageBox {
-  max-height: 300px;
+  max-height: 250px;
   grid-column: span 2;
   border: 1px dashed grey;
   overflow: auto;
@@ -229,6 +234,18 @@ main {
 #messageBox > *:not(#roundBox) {
   padding-left: 6px;
 }
+
+#winnerBox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  display: none;
+}
+
 .winMessage {
   font-weight: 800;
 }
